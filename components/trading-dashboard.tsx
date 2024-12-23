@@ -19,12 +19,12 @@ import { TradingProvider, useTradingContext } from '@/contexts/trading-context'
 import { ThemeProvider, useTheme } from '@/contexts/theme-context'
 
 import { useTradingData } from '@/hooks/use-trading-data'
-import { useWebSocket } from '@/hooks/use-web-socket'
 import React from 'react'
+import { DraggableGraphArea } from './draggable-graphs'
 
 
 function Dashboard() {
-  const { isConnected } = useTradingContext()
+  const { isConnected, lastMessage, sendMessage } = useTradingContext()
   const { darkMode } = useTheme()
   
   const {
@@ -39,8 +39,6 @@ function Dashboard() {
     executeOrder,
     updateData
   } = useTradingData()
-
-  const { lastMessage, sendMessage } = useWebSocket('wss://your-websocket-server-url.com')
 
   useEffect(() => {
     if (lastMessage && lastMessage.type !== 'CURRENT_STATS') {
@@ -64,20 +62,24 @@ function Dashboard() {
       <Header />
       <main className="flex-grow p-4 overflow-auto bg-background text-foreground">
         <div className="container mx-auto">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="w-full lg:w-2/3 space-y-4">
-              <StockChartsCard stocks={stocks} chartData={chartData} />
-              <StockList stocks={stocks} />
+          {/* <DraggableGraphArea isDraggable> */}
+          <div className="container mx-auto">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="w-full lg:w-2/3 space-y-4">
+                <StockChartsCard stocks={stocks} chartData={chartData} />
+                <StockList stocks={stocks} />
+              </div>
+              <div className="w-full lg:w-1/3">
+                <OrdersCard openOrders={openOrders} filledOrders={filledOrders} />
+              </div>
             </div>
-            <div className="w-full lg:w-1/3">
-              <OrdersCard openOrders={openOrders} filledOrders={filledOrders} />
+            <div className="grid gap-4 mt-4 md:grid-cols-2">
+              <SuggestedOrdersCard suggestedOrders={suggestedOrders} executeOrder={handleExecuteOrder} />
+              <BotStatsCard botStats={botStats} />
             </div>
+            <PortfolioCard portfolio={portfolio} stocks={stocks} />
           </div>
-          <div className="grid gap-4 mt-4 md:grid-cols-2">
-            <SuggestedOrdersCard suggestedOrders={suggestedOrders} executeOrder={handleExecuteOrder} />
-            <BotStatsCard botStats={botStats} />
-          </div>
-          <PortfolioCard portfolio={portfolio} stocks={stocks} />
+          {/* </DraggableGraphArea> */}
         </div>
       </main>
     </div>

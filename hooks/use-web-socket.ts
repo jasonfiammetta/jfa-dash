@@ -1,43 +1,61 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react'
 
-type WebSocketMessage = {
-  type: string;
-  payload: any;
-};
+export interface WebSocketMessage {
+  type: string
+  payload: any
+}
 
 export function useWebSocket(url: string) {
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null);
+  const [sockets, setSockets] = useState<WebSocket[]>([])
+  const [isConnected, setIsConnected] = useState(false)
+  const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null)
 
-  useEffect(() => {
-    const ws = new WebSocket(url);
+  const addWebsocket = (ws: WebSocket) => {
+    setSockets([ws, ...sockets.filter((ws) => ws.readyState == WebSocket.OPEN)])
+  }
+
+  const reconnect = (url: string) => {
+    const ws = new WebSocket(url)
 
     ws.onopen = () => {
-      setIsConnected(true);
-    };
+      setIsConnected(true)
+    }
+
+    ws.onerror = (error) => {
+      console.log(error)
+    }
 
     ws.onclose = () => {
-      setIsConnected(false);
-    };
+      setIsConnected(false)
+    }
 
     ws.onmessage = (event) => {
-      const message: WebSocketMessage = JSON.parse(event.data);
-      setLastMessage(message);
-    };
+      const message: WebSocketMessage = JSON.parse(event.data)
+      setLastMessage(message)
+    }
 
-    setSocket(ws);
+    addWebsocket(ws)
+  }
+
+  useEffect(() => {
+    reconnect(url)
 
     return () => {
-      ws.close();
-    };
-  }, [url]);
+      if (sockets.length > 0) {
+        sockets[0].close()
+      }
+    }
+  }, [url])
 
   const sendMessage = useCallback((message: WebSocketMessage) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify(message));
+    if (!isConnected) {
+      console.log('attempting to reconnect...')
+      reconnect(url)
     }
-  }, [socket]);
+    if (sockets[0] && sockets[0].readyState === WebSocket.OPEN) {
+      sockets[0].send(JSON.stringify(message))
+    }
+  }, [])
 
-  return { isConnected, lastMessage, sendMessage };
+  return { isConnected, lastMessage, sendMessage }
 }

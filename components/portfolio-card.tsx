@@ -31,7 +31,7 @@ export function PortfolioCard({ portfolio, stocks }: PortfolioCardProps) {
               </tr>
             </thead>
             <tbody>
-              {portfolio.map((position) => {
+              {portfolio && portfolio.map((position) => {
                 const currentPrice = stocks.find(item => item.symbol === position.symbol)?.price || position.averagePrice
                 const currentValue = position.quantity * currentPrice
                 return (

@@ -29,7 +29,7 @@ export function StockList({ stocks }: StockListProps) {
               </tr>
             </thead>
             <tbody>
-              {stocks.map((item: Stock) => (
+              {stocks && stocks.map((item: Stock) => (
                 <tr key={item.symbol}>
                   <td>{item.symbol}</td>
                   <td>${item.price.toFixed(2)}</td>

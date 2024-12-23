@@ -17,7 +17,7 @@ export function SuggestedOrdersCard({ suggestedOrders, executeOrder }: Suggested
       <CardContent>
         <OrderList orders={suggestedOrders} showSuggestionDetails={true} />
         <div className="mt-4 space-y-2">
-          {suggestedOrders.map((order) => (
+          {suggestedOrders && suggestedOrders.map((order) => (
             <Button 
               key={order.id}
               onClick={() => executeOrder(order)}

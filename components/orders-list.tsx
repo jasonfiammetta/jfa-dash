@@ -27,7 +27,7 @@ export function OrderList({ orders, showSuggestionDetails = false }: OrderListPr
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
+          {orders && orders.map((order) => (
             <tr key={order.id}>
               <td>{order.symbol}</td>
               <td>

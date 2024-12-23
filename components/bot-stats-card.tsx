@@ -31,7 +31,7 @@ export function BotStatsCard({ botStats }: BotStatsCardProps) {
               </tr>
             </thead>
             <tbody>
-              {botStats.map((stat) => (
+              {botStats && botStats.map((stat) => (
                 <tr key={stat.id}>
                   <td>{stat.name}</td>
                   <td>{stat.ordersCount}</td>

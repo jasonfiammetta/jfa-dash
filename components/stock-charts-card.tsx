@@ -5,6 +5,7 @@ import { useTheme } from '@/contexts/theme-context'
 import { Stock } from '@/types'
 import { useState } from "react"
 import { CandlestickData } from 'lightweight-charts';
+import PlotlyCard from "./plotly-card"
 
 
 interface StockChartsCardProps {
@@ -50,23 +51,13 @@ export function StockChartsCard({ stocks, chartData }: StockChartsCardProps) {
       <CardContent>
         <Tabs defaultValue={activeStock} onValueChange={setActiveStock}>
           <TabsList>
-            {stocks.map((stock) => (
+            {stocks && stocks.map((stock) => (
               <TabsTrigger key={stock.symbol} value={stock.symbol}>{stock.symbol}</TabsTrigger>
             ))}
           </TabsList>
-          {stocks.map((stock) => (
+          {stocks && stocks.map((stock) => (
             <TabsContent key={stock.symbol} value={stock.symbol}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{stock.symbol}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <StockChart 
-                    data={chartData} 
-                    colors={darkMode ? chartColors.dark : chartColors.light} 
-                  />
-                </CardContent>
-              </Card>
+              <PlotlyCard title={stock.symbol}/>
             </TabsContent>
           ))}
         </Tabs>
